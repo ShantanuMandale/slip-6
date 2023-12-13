@@ -1,52 +1,43 @@
 from collections import deque
 
-class Graph:
-    def __init__(self):
-        self.graph = {}
+def bfs(graph, start, goal):
+    visited = set()
+    queue = deque([(start, [start])])
 
-    def add_edge(self, node, neighbor):
-        if node not in self.graph:
-            self.graph[node] = []
-        self.graph[node].append(neighbor)
+    while queue:
+        current_node, path = queue.popleft()
 
-    def bfs(self, start, goal):
-        visited = set()
-        queue = deque([start])
+        if current_node == goal:
+            return path
 
-        while queue:
-            current_node = queue.popleft()
+        if current_node not in visited:
+            visited.add(current_node)
 
-            if current_node == goal:
-                return True
+            for neighbor in graph[current_node]:
+                if neighbor not in visited:
+                    queue.append((neighbor, path + [neighbor]))
 
-            if current_node not in visited:
-                visited.add(current_node)
-                queue.extend(neighbor for neighbor in self.graph.get(current_node, []) if neighbor not in visited)
+    return None
 
-        return False
+if _name_ == "_main_":
+    # Define the graph as an adjacency list
+    graph = {
+        1: [2, 3],
+        2: [1, 4, 5],
+        3: [1, 6, 7],
+        4: [2, 8],
+        5: [2],
+        6: [3],
+        7: [3],
+        8: [4]
+    }
 
-# Example graph
-graph = Graph()
-graph.add_edge(1, 2)
-graph.add_edge(1, 3)
-graph.add_edge(2, 4)
-graph.add_edge(2, 5)
-graph.add_edge(3, 6)
-graph.add_edge(3, 7)
-graph.add_edge(4, 8)
-graph.add_edge(5, 8)
-graph.add_edge(6, 8)
-graph.add_edge(7, 8)
+    initial_node = 1
+    goal_node = 8
 
-# Set the initial and goal nodes
-initial_node = 1
-goal_node = 8
+    path = bfs(graph, initial_node, goal_node)
 
-# Run BFS algorithm
-result = graph.bfs(initial_node, goal_node)
-
-# Print the result
-if result:
-    print(f"There is a path from {initial_node} to {goal_node}.")
-else:
-print(f"No path found from {initial_node} to {goal_node}.")
+    if path:
+        print(f"Path from {initial_node} to {goal_node}: {path}")
+    else:
+        print(f"No path found from {initial_node} to {goal_node}")
